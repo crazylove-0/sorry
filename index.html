@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>I am Really Sorry... Please Maaf Kardo 🥺🐾</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&family=Sacramento&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Quicksand', sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffeef2 0%, #ffd6e0 50%, #fed0dc 100%);
+      color: #4a2c35;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Floating Heart Sprinkles */
+    .floating-hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .heart-particle {
+      position: absolute;
+      font-size: 16px;
+      color: rgba(255, 105, 135, 0.4);
+      animation: floatUp 6s linear infinite;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(105vh) scale(0.8); opacity: 0; }
+      20% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    .viewport {
+      position: relative;
+      z-index: 5;
+      width: 100%;
+      max-width: 410px;
+      height: 94vh;
+      max-height: 820px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      contain: layout paint;
+    }
+
+    .card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      border-radius: 28px;
+      box-shadow: 0 18px 45px rgba(230, 90, 120, 0.18), inset 0 0 15px rgba(255, 255, 255, 0.6);
+      padding: 24px 18px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0;
+      transform: scale(0.96);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .screen.active {
+      display: flex;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #632034;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 13px;
+      font-weight: 600;
+      color: #9c5268;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    /* Animated Cat Canvas/Image Containers */
+    .cat-avatar-wrap {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff0f5 40%, rgba(255, 214, 224, 0.5) 100%);
+      border: 3px solid #ffccd5;
+      margin: 8px auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(255, 154, 175, 0.3);
+    }
+    .cat-gif {
+      width: 135px;
+      height: 135px;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    /* Buttons */
+    .btn-next {
+      background: linear-gradient(135deg, #ff758f, #ff4d6d);
+      color: #fff;
+      border: none;
+      padding: 12px 32px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.35);
+      margin-top: 14px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-next:active {
+      transform: scale(0.95);
+    }
+
+    /* SCREEN 1: Dynamic Angry Range Slider */
+    .slider-wrap {
+      width: 100%;
+      padding: 10px 14px;
+      margin: 4px 0;
+    }
+    input[type=range] {
+      width: 100%;
+      -webkit-appearance: none;
+      height: 12px;
+      background: #ffccd5;
+      border-radius: 10px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #ff4d6d;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    /* SCREEN 2: Negotiation Bribe Grid */
+    .bribe-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+      margin: 10px 0;
+    }
+    .bribe-card {
+      background: #fff;
+      border: 2px dashed #ffccd5;
+      border-radius: 16px;
+      padding: 10px 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #7a3044;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .bribe-card.accepted {
+      border: 2px solid #52b788;
+      background: #e8f5e9;
+      color: #2d6a4f;
+      transform: scale(0.98);
+    }
+
+    /* SCREEN 3: The Impossible Forgiveness Trap */
+    .arena-proposal {
+      position: relative;
+      width: 100%;
+      height: 190px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 6px;
+    }
+    .btn-yes {
+      background: linear-gradient(135deg, #52b788, #2d6a4f);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 14px 44px;
+      border-radius: 35px;
+      border: none;
+      box-shadow: 0 10px 25px rgba(45, 106, 79, 0.4);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      z-index: 6;
+    }
+    .btn-yes:active { transform: scale(1.08); }
+    .btn-no {
+      position: absolute;
+      background: #fff;
+      border: 1.5px solid #ffccd5;
+      color: #a34860;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      bottom: 8px;
+      transition: top 0.2s ease, left 0.2s ease;
+      z-index: 7;
+    }
+
+    /* Floating Music Icon */
+    .music-pill {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid #ffccd5;
+      color: #ff4d6d;
+      padding: 8px 14px;
+      border-radius: 25px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      z-index: 99;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Music Element -->
+  <audio id="bgSong" loop preload="auto" playsinline>
+    <source src="Dooron Dooron Unplugged Paresh Pahuja 320 Kbps-[AudioTrimmer.com].mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="floating-hearts" id="heartsContainer"></div>
+  <div class="music-pill" onclick="toggleAudio()">🎵 <span id="musicStatus">Music: ON</span></div>
+
+  <div class="viewport">
+    <div class="card">
+
+      <!-- SCREEN 1: The Angry Meter Slider -->
+      <div class="screen active" id="s-meter">
+        <h2 class="title">Kitna Gussa Ho? 🐾</h2>
+        <p class="subtitle" id="meterSubtitle">Slider aage karke sach batao...</p>
+
+        <div class="cat-avatar-wrap">
+          <img class="cat-gif" id="meterCatImg" src="https://media.tenor.com/7s1HqIomw_wAAAAC/peach-goma-crying.gif" alt="Crying Cat" />
+        </div>
+
+        <div class="slider-wrap">
+          <input type="range" id="angryRange" min="0" max="100" value="20" oninput="handleSliderChange(this.value)">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #a34860; margin-top: 6px;">
+            <span>Thoda sa 😾</span>
+            <span id="sliderPercentText" style="color: #ff4d6d; font-size: 14px;">20%</span>
+            <span>Bohot Zyada! 💥</span>
+          </div>
+        </div>
+
+        <button class="btn-next" onclick="goToScreen('s-bribe')">Manane Ka Plan Dekho 🥺</button>
+      </div>
+
+      <!-- SCREEN 2: Negotiation & Bribes -->
+      <div class="screen" id="s-bribe">
+        <h2 class="title">Compromise Offer 🎁</h2>
+        <p class="subtitle">Please gussa chhod do, ye sab offers valid hain:</p>
+
+        <div class="cat-avatar-wrap" style="width:130px; height:130px;">
+          <img class="cat-gif" style="width:110px; height:110px;" src="https://media.tenor.com/W2l41q8gWfQAAAAC/cute-cat-begging.gif" alt="Begging Cat" />
+        </div>
+
+        <div class="bribe-grid">
+          <div class="bribe-card" onclick="acceptBribe(this)">
+            <span style="font-size: 20px;">🍕</span>
+            <span>Unlimited Food Date</span>
+          </div>
+          <div class="bribe-card" onclick="acceptBribe(this)">
+            <span style="font-size: 20px;">🍨</span>
+            <span>Late Night Ice Cream</span>
+          </div>
+          <div class="bribe-card" onclick="acceptBribe(this)">
+            <span style="font-size: 20px;">🤫</span>
+            <span>I'll Listen & Not Argue</span>
+          </div>
+          <div class="bribe-card" onclick="acceptBribe(this)">
+            <span style="font-size: 20px;">💆‍♀️</span>
+            <span>Infinite Free Hugs</span>
+          </div>
+        </div>
+
+        <button class="btn-next" id="btnToPromise" onclick="goToScreen('s-promise')">Final Baat Suno 💌</button>
+      </div>
+
+      <!-- SCREEN 3: The Deep Emotional Note -->
+      <div class="screen" id="s-promise">
+        <h2 class="title">From My Core 🩹</h2>
+        <div class="cat-avatar-wrap" style="width:120px; height:120px; margin: 4px auto 10px;">
+          <img class="cat-gif" style="width:100px; height:100px;" src="https://media.tenor.com/2sL7R4jLdVkAAAAC/cat-sad.gif" alt="Sad Regret Cat" />
+        </div>
+
+        <div style="background: rgba(255, 238, 242, 0.85); border-radius: 18px; padding: 14px; margin-bottom: 12px; border: 1.5px solid #ffccd5; text-align: left;">
+          <p style="font-size: 12px; line-height: 1.6; color: #5a2736; font-weight: 600;">
+            "Mujhe pata hai meri galti thi aur maine bina soche bol diya... But trust me, tumhe hurt karne ka bilkul irada nahi tha.<br><br>
+            Jhagdna theek hai, par please aisi silence mat rakho na... mera poora din tumhare bina adhoora rehta hai."
+          </p>
+        </div>
+
+        <button class="btn-next" onclick="goToScreen('s-trap')">Ek Akhiri Sawaal 👉</button>
+      </div>
+
+      <!-- SCREEN 4: The Impossible Forgive Trap -->
+      <div class="screen" id="s-trap">
+        <h2 class="title" style="font-size: 20px;">Maaf Kiya Na? 🥺🐾</h2>
+        <p class="subtitle" id="trapSub">Sach me sorry bol raha hoon...</p>
+
+        <div class="cat-avatar-wrap" style="width: 140px; height: 140px;">
+          <img class="cat-gif" id="trapCatImg" src="https://media.tenor.com/M6LgA8G5LIAAAAAC/cat-pleading.gif" alt="Pleading Cat" />
+        </div>
+
+        <div class="arena-proposal" id="arenaBox">
+          <button class="btn-yes" onclick="forgiveAccepted()">Haan, Maaf Kiya! 🥰</button>
+          <button class="btn-no" id="btnNoBhaag" onmouseover="dodgeButton()" onclick="dodgeButton()">Nahi! 😤</button>
+        </div>
+
+        <p id="tauntText" style="min-height: 20px; font-size: 11.5px; font-weight: 700; color: #d90429; margin-top: 4px;"></p>
+      </div>
+
+      <!-- SCREEN 5: Pure Celebration & Tight Hug -->
+      <div class="screen" id="s-final">
+        <h2 class="title" style="font-size: 24px; color: #2d6a4f;">YAYYY! Sab Theek Ho Gaya! 🎉</h2>
+        <p class="subtitle" style="color: #40916c;">Ab jaldi se smile karo aur ek call uthao!</p>
+
+        <div class="cat-avatar-wrap" style="width: 170px; height: 170px; border-color: #74c69d;">
+          <img class="cat-gif" style="width: 150px; height: 150px;" src="https://media.tenor.com/83p1Xb1l_ZAAAAAC/peach-goma-hug.gif" alt="Hugging Cats" />
+        </div>
+
+        <p style="font-size: 13px; font-weight: 600; color: #52796f; margin: 8px 0 16px;">
+          "Your virtual tight hug has been delivered successfully! 🫂✨"
+        </p>
+
+        <button class="btn-next" style="background: linear-gradient(135deg, #52b788, #2d6a4f);" onclick="location.reload()">Start Over 🔄</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Audio Autoplay & Unlock
+    const audio = document.getElementById("bgSong");
+    let audioPlaying = false;
+
+    function playMusic() {
+      if (!audioPlaying && audio) {
+        audio.play().then(() => {
+          audioPlaying = true;
+          document.getElementById("musicStatus").innerText = "Music: ON";
+        }).catch(() => {});
+      }
+    }
+    window.addEventListener("pointerdown", playMusic, { once: true });
+
+    function toggleAudio() {
+      if (audio.paused) {
+        audio.play();
+        document.getElementById("musicStatus").innerText = "Music: ON";
+      } else {
+        audio.pause();
+        document.getElementById("musicStatus").innerText = "Music: OFF";
+      }
+    }
+
+    // Screen Switching
+    function goToScreen(id) {
+      if (navigator.vibrate) navigator.vibrate(25);
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      const target = document.getElementById(id);
+      if (target) target.classList.add("active");
+    }
+
+    // Screen 1: Slider Reactions with Cat Expression Swap
+    const meterCat = document.getElementById("meterCatImg");
+    const meterText = document.getElementById("sliderPercentText");
+    const meterSub = document.getElementById("meterSubtitle");
+
+    function handleSliderChange(val) {
+      meterText.innerText = val + "%";
+      if (val < 30) {
+        meterCat.src = "https://media.tenor.com/2sL7R4jLdVkAAAAC/cat-sad.gif";
+        meterSub.innerText = "Chalo thoda kam gussa ho, par fir bhi maan jao na...";
+      } else if (val < 70) {
+        meterCat.src = "https://media.tenor.com/7s1HqIomw_wAAAAC/peach-goma-crying.gif";
+        meterSub.innerText = "Itna gussa? Mera dil toot raha hai ab 🥺";
+      } else {
+        meterCat.src = "https://media.tenor.com/gA3pM4k790AAAAAC/cat-cry-crying.gif";
+        meterSub.innerText = "Oyyye bachhe ki jaan logi kya! 100% gussa?! 😭";
+        if (navigator.vibrate) navigator.vibrate([40, 40, 60]);
+      }
+    }
+
+    // Screen 2: Bribes Selection
+    function acceptBribe(el) {
+      if (navigator.vibrate) navigator.vibrate(20);
+      el.classList.toggle("accepted");
+      confetti({ particleCount: 15, spread: 45, origin: { y: 0.6 } });
+    }
+
+    // Screen 4: Teleporting "NO" Button
+    const taunts = [
+      "Arre pakad ke dikhao! 🏃‍♂️",
+      "Nahi maanogi? Ro dunga main! 😭",
+      "Galat button dabaya cutie! 🙈",
+      "Maan jao na please... 🥺",
+      "Dekho destiny green button par hai! ✨"
+    ];
+    let tauntCount = 0;
+
+    function dodgeButton() {
+      if (navigator.vibrate) navigator.vibrate(15);
+      const btnNo = document.getElementById("btnNoBhaag");
+      const arena = document.getElementById("arenaBox");
+
+      const maxX = arena.clientWidth - btnNo.clientWidth - 10;
+      const maxY = arena.clientHeight - btnNo.clientHeight - 10;
+
+      const randX = Math.max(10, Math.floor(Math.random() * maxX));
+      const randY = Math.max(10, Math.floor(Math.random() * maxY));
+
+      btnNo.style.left = `${randX}px`;
+      btnNo.style.top = `${randY}px`;
+
+      document.getElementById("tauntText").innerText = taunts[tauntCount % taunts.length];
+      tauntCount++;
+    }
+
+    // Screen 5: Acceptance & Hug
+    function forgiveAccepted() {
+      if (navigator.vibrate) navigator.vibrate([60, 50, 100]);
+      confetti({
+        particleCount: 130,
+        spread: 100,
+        origin: { y: 0.45 },
+        colors: ['#ff758f', '#ff4d6d', '#52b788', '#ffd166']
+      });
+      setTimeout(() => {
+        goToScreen("s-final");
+      }, 400);
+    }
+
+    // Floating Ambient Hearts
+    const hContainer = document.getElementById("heartsContainer");
+    const symbols = ["🌸", "💖", "🐾", "✨", "💕"];
+    setInterval(() => {
+      const p = document.createElement("div");
+      p.className = "heart-particle";
+      p.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+      p.style.left = Math.random() * 100 + "vw";
+      p.style.animationDuration = (Math.random() * 3 + 4) + "s";
+      hContainer.appendChild(p);
+      setTimeout(() => p.remove(), 6500);
+    }, 450);
+  </script>
+</body>
+</html>
