@@ -48,7 +48,7 @@
 
     .card {
       width: 100%;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(16px);
       border: 2px solid #fff;
       border-radius: 28px;
@@ -256,7 +256,7 @@
       cursor: pointer;
     }
 
-    /* SCREEN 6: Running Trap */
+    /* SCREEN 6: Running Button */
     .arena-proposal {
       position: relative;
       width: 100%;
@@ -301,7 +301,6 @@
   <div class="viewport">
     <div class="card">
 
-      <!-- SCREEN 1: Gussa Slider -->
       <div class="screen active" id="s-meter">
         <h2 class="title">Kitna Gussa Ho? 🐾</h2>
         <p class="subtitle" id="meterSubtitle">Slider aage karke sach batao...</p>
@@ -322,10 +321,9 @@
         <button class="btn-next" onclick="goToScreen('s-wiper')">Aansu Pochne Chalo 🥺</button>
       </div>
 
-      <!-- SCREEN 2: Tear Wiper Canvas -->
       <div class="screen" id="s-wiper">
         <h2 class="title">Aansu Saaf Karo 🥺</h2>
-        <p class="subtitle">Ungli se screen ragad kar aansu wipe karo...</p>
+        <p class="subtitle">Screen par ungli ghumao aur aansu poch do...</p>
 
         <div class="wiper-container">
           <img class="wiper-img" src="bubu-dancing-dance.gif" alt="Happy Cat" />
@@ -336,7 +334,6 @@
         <button class="btn-next" id="btnAfterWipe" style="display: none;" onclick="goToScreen('s-bribe')">Offer Dekho 🎁</button>
       </div>
 
-      <!-- SCREEN 3: Negotiation Bribes -->
       <div class="screen" id="s-bribe">
         <h2 class="title">Compromise Offer 🎁</h2>
         <p class="subtitle">Please gussa chhod do, ye sab offers valid hain:</p>
@@ -367,7 +364,6 @@
         <button class="btn-next" onclick="goToScreen('s-promise')">Dil Ki Baat Suno 💌</button>
       </div>
 
-      <!-- SCREEN 4: Deep Emotional Note -->
       <div class="screen" id="s-promise">
         <h2 class="title">From My Heart 🩹</h2>
         <div class="cat-avatar-wrap" style="width:110px; height:110px; margin: 4px auto 8px;">
@@ -384,7 +380,6 @@
         <button class="btn-next" onclick="goToScreen('s-shredder')">Jhagda Delete Karo 🧾</button>
       </div>
 
-      <!-- SCREEN 5: Anger Shredder -->
       <div class="screen" id="s-shredder">
         <h2 class="title">Delete The Fight 🧾</h2>
         <p class="subtitle">Saari misunderstanding shredder me daal do</p>
@@ -411,7 +406,6 @@
         <button class="btn-next" id="btnAfterShred" style="display:none;" onclick="goToScreen('s-trap')">Akhiri Faisla 💍</button>
       </div>
 
-      <!-- SCREEN 6: Running 'NO' Button -->
       <div class="screen" id="s-trap">
         <h2 class="title" style="font-size: 20px;">Maaf Kiya Na? 🥺🐾</h2>
         <p class="subtitle">Dil se sorry bol raha hoon...</p>
@@ -428,7 +422,6 @@
         <p id="tauntText" style="min-height: 18px; font-size: 11px; font-weight: 700; color: #d90429; margin-top: 4px;"></p>
       </div>
 
-      <!-- SCREEN 7: Final Tight Hug & Celebration -->
       <div class="screen" id="s-final">
         <h2 class="title" style="font-size: 22px; color: #2d6a4f;">Sab Theek Ho Gaya! 🎉</h2>
         <p class="subtitle" style="color: #40916c;">Jhagda officially cancelled forever!</p>
@@ -458,93 +451,95 @@
       triggerHaptic(30);
       document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
       const t = document.getElementById(id);
-      if (t) t.classList.add("active");
+      if (t) {
+        t.classList.add("active");
+        if (id === 's-wiper') {
+          setTimeout(initCanvas, 50);
+        }
+      }
     }
 
-    // Screen 1: Slider using crying-crying-cat.gif, cat-cry-cute.gif, crying-sad.gif
+    // Screen 1: Slider (Only 2 stable GIFs used, no missing image issue)
     const meterCat = document.getElementById("meterCatImg");
     const meterText = document.getElementById("sliderPercentText");
     const meterSub = document.getElementById("meterSubtitle");
 
     function handleSliderChange(val) {
       meterText.innerText = val + "%";
-      if (val < 35) {
+      if (val < 50) {
         meterCat.src = "crying-crying-cat.gif";
-        meterSub.innerText = "Thoda kam gussa ho, par fir bhi sun toh lo...";
-      } else if (val < 75) {
-        meterCat.src = "cat-cry-cute.gif";
-        meterSub.innerText = "Itna gussa? Mera dil toot raha hai ab 🥺";
+        meterSub.innerText = "Thoda kam gussa ho, par sun toh lo na please 🥺";
       } else {
         meterCat.src = "crying-sad.gif";
         meterSub.innerText = "Oyyye bachhe ki jaan logi kya! 100% gussa?! 😭";
-        if (navigator.vibrate) navigator.vibrate([40, 40]);
+        if (navigator.vibrate) navigator.vibrate([30, 30]);
       }
     }
 
-    // Screen 2: Tear Wiper Canvas using ngủ-ngon-khóc.gif
+    // Screen 2: Bulletproof Tear Wiper (Zero chance of getting stuck)
     const canvas = document.getElementById("wipeCanvas");
     const ctx = canvas.getContext("2d");
     let isDrawing = false;
-    let wipedPixels = 0;
-    let totalPixels = 0;
+    let wipeScore = 0;
     let tearCleared = false;
 
-    const cryImg = new Image();
-    cryImg.src = "ngủ-ngon-khóc.gif";
-
-    cryImg.onload = () => {
+    function initCanvas() {
       canvas.width = 200;
       canvas.height = 200;
-      ctx.drawImage(cryImg, 0, 0, 200, 200);
-      ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+      ctx.fillStyle = "rgba(255, 230, 238, 0.95)";
       ctx.fillRect(0, 0, 200, 200);
-      totalPixels = canvas.width * canvas.height;
-    };
 
-    function wipe(e) {
-      if (!isDrawing || tearCleared) return;
+      ctx.fillStyle = "#ff4d6d";
+      ctx.font = "bold 13px Quicksand, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Rub to wipe tears 💧", 100, 95);
+      ctx.fillText("🥺🐾", 100, 115);
+    }
+    initCanvas();
+
+    function doWipe(clientX, clientY) {
+      if (tearCleared) return;
       const rect = canvas.getBoundingClientRect();
-      const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-      const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
 
       ctx.globalCompositeOperation = "destination-out";
       ctx.beginPath();
-      ctx.arc(x, y, 20, 0, Math.PI * 2);
+      ctx.arc(x, y, 30, 0, Math.PI * 2);
       ctx.fill();
 
-      triggerHaptic(8);
-      checkWipeProgress();
-    }
+      wipeScore += 2.5;
+      triggerHaptic(6);
 
-    function checkWipeProgress() {
-      wipedPixels++;
-      if (wipedPixels % 10 === 0) {
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        let clearCount = 0;
-        for (let i = 3; i < imgData.data.length; i += 4) {
-          if (imgData.data[i] === 0) clearCount++;
-        }
-        const percent = Math.round((clearCount / totalPixels) * 100);
-        const rem = Math.max(0, 100 - percent);
-        document.getElementById("cleanPercentText").innerText = `Tears Remaining: ${rem}%`;
+      const remaining = Math.max(0, 100 - Math.min(100, Math.round(wipeScore)));
+      document.getElementById("cleanPercentText").innerText = `Tears Remaining: ${remaining}%`;
 
-        if (percent > 65 && !tearCleared) {
-          tearCleared = true;
-          canvas.style.display = "none";
-          document.getElementById("cleanPercentText").innerText = "Aansu Saaf! Cat is Smiling! 🥰";
-          document.getElementById("btnAfterWipe").style.display = "inline-flex";
-          triggerHaptic([40, 50, 80]);
-          confetti({ particleCount: 45, spread: 60, origin: { y: 0.6 } });
-        }
+      if (remaining <= 10 && !tearCleared) {
+        tearCleared = true;
+        canvas.style.display = "none";
+        document.getElementById("cleanPercentText").innerText = "Aansu Saaf! Cat is Smiling! 🥰";
+        document.getElementById("btnAfterWipe").style.display = "inline-flex";
+        triggerHaptic([40, 50, 80]);
+        confetti({ particleCount: 45, spread: 60, origin: { y: 0.6 } });
       }
     }
 
-    canvas.addEventListener("mousedown", () => isDrawing = true);
+    // Mouse Events
+    canvas.addEventListener("mousedown", (e) => { isDrawing = true; doWipe(e.clientX, e.clientY); });
     window.addEventListener("mouseup", () => isDrawing = false);
-    canvas.addEventListener("mousemove", wipe);
-    canvas.addEventListener("touchstart", (e) => { e.preventDefault(); isDrawing = true; wipe(e); });
+    canvas.addEventListener("mousemove", (e) => { if (isDrawing) doWipe(e.clientX, e.clientY); });
+
+    // Touch Events (Mobile)
+    canvas.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      isDrawing = true;
+      if (e.touches.length > 0) doWipe(e.touches[0].clientX, e.touches[0].clientY);
+    });
     window.addEventListener("touchend", () => isDrawing = false);
-    canvas.addEventListener("touchmove", (e) => { e.preventDefault(); wipe(e); });
+    canvas.addEventListener("touchmove", (e) => {
+      e.preventDefault();
+      if (e.touches.length > 0) doWipe(e.touches[0].clientX, e.touches[0].clientY);
+    });
 
     // Screen 3: Bribes
     function acceptBribe(el) {
@@ -577,7 +572,7 @@
       }, 1300);
     }
 
-    // Screen 6: Teleporting 'NO' Button
+    // Screen 6: Teleporting "NO" Button
     const taunts = [
       "Arre pakad ke dikhao! 🏃‍♂️",
       "Nahi maanogi? Ro dunga main! 😭",
